@@ -46,9 +46,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Delete"
-            android:textColor="@color/white"
+            android:textColor="?attr/colorOnPrimary"
             app:icon="@android:drawable/ic_menu_delete"
-            app:iconTint="@color/white"
+            app:iconTint="?attr/colorOnPrimary"
             style="@style/Widget.MaterialComponents.Button.TextButton" />
 
         <com.google.android.material.button.MaterialButton
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Cancel"
-            android:textColor="@color/white"
+            android:textColor="?attr/colorOnPrimary"
             style="@style/Widget.MaterialComponents.Button.TextButton" />
 
     </LinearLayout>
@@ -70,6 +70,6 @@
         android:layout_margin="16dp"
         android:src="@android:drawable/ic_input_add"
         app:backgroundTint="?attr/colorPrimary"
-        app:tint="@color/white" />
+        app:tint="?attr/colorOnPrimary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
