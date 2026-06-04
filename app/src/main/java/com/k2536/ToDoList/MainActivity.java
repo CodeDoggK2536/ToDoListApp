@@ -1,11 +1,13 @@
 package com.k2536.ToDoList;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
         EditText etDesc = view.findViewById(R.id.et_description);
         EditText etDueDate = view.findViewById(R.id.et_due_date);
 
-        etDueDate.setOnClickListener(v -> showDatePicker(etDueDate));
+        etDueDate.setOnClickListener(v -> showDateTimePicker(etDueDate));
         etDueDate.setFocusable(false);
         etDueDate.setClickable(true);
 
@@ -86,8 +88,10 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
             etDueDate.setText(existingTask.getDueDate());
         }
 
+        ((TextView) view.findViewById(R.id.dialog_title))
+                .setText(isEdit ? "Edit Task" : "Add Task");
+
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(isEdit ? "Edit Task" : "Add Task")
                 .setView(view)
                 .create();
 
@@ -118,11 +122,19 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
         view.findViewById(R.id.btn_dialog_cancel).setOnClickListener(v -> dialog.dismiss());
     }
 
-    private void showDatePicker(EditText et) {
+    private void showDateTimePicker(EditText et) {
         Calendar cal = Calendar.getInstance();
-        new DatePickerDialog(this, (view, year, month, dayOfMonth) ->
-                et.setText(String.format("%d-%02d-%02d", year, month + 1, dayOfMonth)),
-                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
+        new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+            int selectedYear = year;
+            int selectedMonth = month;
+            int selectedDay = dayOfMonth;
+            new TimePickerDialog(this, (view1, hourOfDay, minute) ->
+                            et.setText(String.format("%d-%02d-%02d %02d:%02d",
+                                    selectedYear, selectedMonth + 1, selectedDay,
+                                    hourOfDay, minute)),
+                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true
+            ).show();
+        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
         ).show();
     }
 
