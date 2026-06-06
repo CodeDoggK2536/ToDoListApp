@@ -5,6 +5,7 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
     public interface OnTaskListener {
         void onItemClick(Task task, int position);
         void onSelectionChanged(int count);
+        void onTaskCompletedChanged(Task task, boolean completed);
     }
 
     public TaskAdapter(List<Task> tasks, OnTaskListener listener) {
@@ -34,6 +36,15 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
     public void updateData(List<Task> tasks) {
         this.tasks = tasks;
         notifyDataSetChanged();
+    }
+
+    private void applyTaskStyle(ViewHolder holder, Task task) {
+        boolean completed = task.isCompleted();
+        holder.title.setAlpha(completed ? 0.55f : 1f);
+        holder.dueDate.setAlpha(completed ? 0.55f : 1f);
+        holder.title.setPaintFlags(completed
+                ? holder.title.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG
+                : holder.title.getPaintFlags() & ~android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
     }
 
     public boolean isMultiSelectMode() {
@@ -97,6 +108,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Task task = tasks.get(position);
         holder.title.setText(task.getTitle());
+        holder.completedCheck.setOnCheckedChangeListener(null);
+        holder.completedCheck.setChecked(task.isCompleted());
+        holder.completedCheck.setContentDescription(task.isCompleted()
+                ? "Mark task as not completed"
+                : "Mark task as completed");
 
         if (task.getDueDate() != null && !task.getDueDate().isEmpty()) {
             holder.dueDate.setText(task.getDueDate());
@@ -105,10 +121,19 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
             holder.dueDate.setVisibility(View.GONE);
         }
 
+        applyTaskStyle(holder, task);
+
         boolean isSelected = selectedItems.get(position, false);
         holder.cardView.setStrokeColor(isSelected
                 ? Color.parseColor("#FF6200EE") : Color.TRANSPARENT);
         holder.cardView.setStrokeWidth(isSelected ? 3 : 0);
+
+        holder.completedCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (task.isCompleted() == isChecked) {
+                return;
+            }
+            listener.onTaskCompletedChanged(task, isChecked);
+        });
 
         holder.cardView.setOnClickListener(v -> {
             if (multiSelectMode) {
@@ -135,12 +160,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         MaterialCardView cardView;
+        CheckBox completedCheck;
         TextView title;
         TextView dueDate;
 
         ViewHolder(View itemView) {
             super(itemView);
             cardView = (MaterialCardView) itemView;
+            completedCheck = itemView.findViewById(R.id.check_completed);
             title = itemView.findViewById(R.id.text_title);
             dueDate = itemView.findViewById(R.id.text_due_date);
         }

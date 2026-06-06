@@ -170,4 +170,11 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
             fab.setVisibility(View.VISIBLE);
         }
     }
+
+    @Override
+    public void onTaskCompletedChanged(Task task, boolean completed) {
+        task.setCompleted(completed);
+        dbHelper.updateTask(task);
+        refresh();
+    }
 }
