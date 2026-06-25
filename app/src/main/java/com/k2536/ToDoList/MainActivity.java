@@ -27,12 +27,14 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
     private List<Task> tasks;
     private LinearLayout bottomBar;
     private FloatingActionButton fab;
+    private TextView tvEmpty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        tvEmpty = findViewById(R.id.tv_empty);
         dbHelper = new DatabaseHelper(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
         loadData();
         adapter = new TaskAdapter(tasks, this);
         recycler.setAdapter(adapter);
+        tvEmpty.setVisibility(tasks.isEmpty() ? View.VISIBLE : View.GONE);
 
         fab = findViewById(R.id.fab_add);
         fab.setOnClickListener(v -> showTaskDialog(null));
@@ -64,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
     private void refresh() {
         loadData();
         adapter.updateData(tasks);
+        tvEmpty.setVisibility(tasks.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     @Override
