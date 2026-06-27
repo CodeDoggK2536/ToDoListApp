@@ -14,20 +14,38 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="51dp"
-            android:background="?attr/colorPrimary"
+            android:background="@color/toolbar_bg"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:title="ToDoList"
+            app:titleTextColor="@color/toolbar_title_color"
             app:titleTextAppearance="@style/ToolbarTitle" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_tasks"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:padding="8dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_tasks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="8dp" />
+
+        <TextView
+            android:id="@+id/text_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/empty_task_hint"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tv_empty"
