@@ -1,4 +1,4 @@
-package com.k2536.ToDoList;
+package io.github.ek2536.todolist;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -48,7 +48,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Returns all tasks ordered by sort_order ascending, with completed tasks at the bottom.
+     * Returns all tasks ordered by sort_order ascending so completed tasks keep their current position.
      * @return A list of all Task objects
      */
     public List<Task> getAllTasks() {

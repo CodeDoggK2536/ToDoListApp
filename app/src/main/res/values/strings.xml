@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">ToDoList</string>
-    <string name="empty_task_hint">Press &quot;+&quot; to create your first task!</string>
+    <string name="empty_task_hint">Press "+" to create your first task!</string>
 </resources>

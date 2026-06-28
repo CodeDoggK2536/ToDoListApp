@@ -1,4 +1,4 @@
-package com.k2536.ToDoList;
+package io.github.ek2536.todolist;
 
 import android.content.Context;
 

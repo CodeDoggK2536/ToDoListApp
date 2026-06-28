@@ -1,4 +1,4 @@
-package com.k2536.ToDoList;
+package io.github.ek2536.todolist;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
     private List<Task> tasks;
     private LinearLayout bottomBar;
     private FloatingActionButton fab;
-    private TextView tvEmpty;
+    private TextView textEmpty;
 
     /**
      * Initialises the UI, database, RecyclerView, and ItemTouchHelper for drag-and-drop.
@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvEmpty = findViewById(R.id.tv_empty);
         dbHelper = new DatabaseHelper(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -54,12 +53,13 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
         recycler.setLayoutManager(new LinearLayoutManager(this));
 
         textEmpty = findViewById(R.id.text_empty);
+        // Show empty-state hint only when the list has no tasks
+        textEmpty.setText(getString(R.string.empty_task_hint));
         loadData();
         // Show empty-state hint only when the list has no tasks
         textEmpty.setVisibility(tasks.isEmpty() ? View.VISIBLE : View.GONE);
         adapter = new TaskAdapter(tasks, this);
         recycler.setAdapter(adapter);
-        tvEmpty.setVisibility(tasks.isEmpty() ? View.VISIBLE : View.GONE);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(adapter.getItemTouchHelperCallback());
         itemTouchHelper.attachToRecyclerView(recycler);
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
     private void refresh() {
         loadData();
         adapter.updateData(tasks);
-        tvEmpty.setVisibility(tasks.isEmpty() ? View.VISIBLE : View.GONE);
+        textEmpty.setVisibility(tasks.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -149,38 +149,55 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
      * @param existingTask null for create, non-null for edit
      */
     private void showTaskDialog(Task existingTask) {
+        // Inflate the shared dialog layout used for both creating and editing tasks.
         View view = getLayoutInflater().inflate(R.layout.dialog_task, null);
+        // Read the title input so we can validate required text before saving.
         EditText etTitle = view.findViewById(R.id.et_title);
+        // Read the optional description input from the dialog.
         EditText etDesc = view.findViewById(R.id.et_description);
+        // Read the due-date field, which opens a picker instead of the keyboard.
         EditText etDueDate = view.findViewById(R.id.et_due_date);
 
         // Make the date field trigger a picker instead of the soft keyboard
         etDueDate.setOnClickListener(v -> showDateTimePicker(etDueDate));
+        // Prevent the soft keyboard from opening for the due-date field.
         etDueDate.setFocusable(false);
+        // Keep the field clickable so the user can still launch the picker dialog.
         etDueDate.setClickable(true);
 
+        // Determine whether this dialog is editing an existing task or creating a new one.
         boolean isEdit = existingTask != null;
         if (isEdit) {
+            // Pre-fill the existing title so the user can update it.
             etTitle.setText(existingTask.getTitle());
+            // Pre-fill the existing description to preserve the old details.
             etDesc.setText(existingTask.getDescription());
+            // Pre-fill the previously selected due date and time.
             etDueDate.setText(existingTask.getDueDate());
         }
 
+        // Update the dialog heading so the mode is obvious to the user.
         ((TextView) view.findViewById(R.id.dialog_title))
                 .setText(isEdit ? "Edit Task" : "Create Task");
 
+        // Build the dialog around the custom Material layout.
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(view)
                 .create();
 
+        // Show the dialog before interacting with any of its views.
         dialog.show();
         // Transparent background so the rounded card corners show cleanly
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
+        // Save the task when the user presses the positive action button.
         view.findViewById(R.id.btn_dialog_ok).setOnClickListener(v -> {
+            // Trim the title so blank spaces are not treated as valid input.
             String title = etTitle.getText().toString().trim();
+            // Stop here if the required title is still empty.
             if (title.isEmpty()) return;  // Don't save a task with no title
 
+            // Build one Task object for either create mode or edit mode.
             Task task = new Task(
                     isEdit ? existingTask.getId() : 0,
                     title,
@@ -190,15 +207,20 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
                     isEdit ? existingTask.getSortOrder() : tasks.size()
             );
 
+            // Update the existing row when editing a task.
             if (isEdit) {
                 dbHelper.updateTask(task);
             } else {
+                // Insert a new row when creating a brand-new task.
                 dbHelper.insertTask(task);
             }
+            // Reload the list so the latest database state appears on screen.
             refresh();
+            // Close the dialog after the save operation completes.
             dialog.dismiss();
         });
 
+        // Close the dialog without saving any changes.
         view.findViewById(R.id.btn_dialog_cancel).setOnClickListener(v -> dialog.dismiss());
     }
 
@@ -222,17 +244,17 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.OnTas
     }
 
     /**
-     * Deletes selected tasks that haven't been completed yet.
+     * Deletes the currently selected tasks.
      * This is the nested control structure — an if inside a for loop.
      */
     private void deleteSelectedTasks() {
         int[] positions = adapter.getSelectedPositions();
         int deletedCount = 0;
-        // Nested control structure: selection (if) inside repetition (for)
+        // Nested control structure: selection check (if) inside repetition (for)
         for (int pos : positions) {
             Task task = adapter.getItem(pos);
-            // Only delete tasks that haven't been completed yet
-            if (task != null && !task.isCompleted()) {
+            // Guard against null before attempting deletion
+            if (task != null) {
                 dbHelper.deleteTask(task.getId());
                 deletedCount++;
             }

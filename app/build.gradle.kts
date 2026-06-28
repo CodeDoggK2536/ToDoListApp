@@ -3,15 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.k2536.ToDoList"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    namespace = "io.github.ek2536.todolist"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.k2536.ToDoList"
+        applicationId = "io.github.ek2536.todolist"
         minSdk = 28
         targetSdk = 36
         versionCode = 1

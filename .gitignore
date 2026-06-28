@@ -1,20 +1,20 @@
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+.idea/
 .DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
 local.properties
-/.idea
 .kilo/kilo.jsonc
 requirement.md
 Assessment 3 report template.docx
+*.docx
 ~$*.docx
+.codegraph/
+PROJECT_ANALYSIS.md
+ToDoListApp_code_submission.zip
+.vscode/
+ToDoListApp_code_submission_v2.zip

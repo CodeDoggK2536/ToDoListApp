@@ -1,4 +1,4 @@
-package com.k2536.ToDoList;
+package io.github.ek2536.todolist;
 
 /**
  * A single to-do item that maps directly to a row in the tasks table.
